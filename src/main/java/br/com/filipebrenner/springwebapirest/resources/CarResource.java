@@ -35,20 +35,15 @@ public class CarResource {
     @DeleteMapping("car/{id}")
     public void deleteCar(@PathVariable Long id) throws CarNotFoundException {
         Optional<Car> car = carRepository.findById(id);
-        if(car.isPresent()) {
-            carRepository.delete(car.get());
-        } else throw new CarNotFoundException(id);
+        if(car.isPresent()) carRepository.delete(car.get());
+        else throw new CarNotFoundException(id);
     }
 
-    @PostMapping("/car/up/{id}")
-    public Car updateCarById(@RequestBody Car newCar, @PathVariable Long id) throws CarNotFoundException {
-        Optional<Car> oldCar = carRepository.findById(id);
-        if(oldCar.isPresent()) {
-            carRepository.delete(oldCar.get());
-            newCar.setId(id);
-            return carRepository.save(newCar);
-        }
-        else throw new CarNotFoundException(id);
+    @PutMapping("/car")
+    public Car updateCarById(@RequestBody Car newCar) throws CarNotFoundException {
+        Optional<Car> oldCar = carRepository.findById(newCar.getId());
+        if(oldCar.isPresent()) return carRepository.save(newCar);
+        else throw new CarNotFoundException(newCar.getId());
     }
 
 }
