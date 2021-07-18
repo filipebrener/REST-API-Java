@@ -2,48 +2,46 @@ package br.com.filipebrenner.springwebapirest.resources;
 
 import br.com.filipebrenner.springwebapirest.exceptions.CarNotFoundException;
 import br.com.filipebrenner.springwebapirest.model.Car;
-import br.com.filipebrenner.springwebapirest.repository.CarRepository;
+import br.com.filipebrenner.springwebapirest.services.CarService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
 public class CarResource {
 
-    CarRepository carRepository;
+    CarService service;
 
     @GetMapping("/car")
-    public List<Car> getAll(){
-        return carRepository.findAll();
+    public ResponseEntity<List<Car>> getAll(){
+        return ResponseEntity.ok(service.findAll());
     }
 
     @PostMapping("/car")
-    public Car saveCar(@RequestBody Car car){
-        return carRepository.save(car);
+    public ResponseEntity<Car> saveCar(@RequestBody Car car){
+        service.save(car);
+        return ResponseEntity.status(HttpStatus.CREATED).body(car);
     }
 
     @GetMapping("/car/{id}")
-    public Car getCarById(@PathVariable Long id) throws CarNotFoundException{
-        Optional<Car> car = carRepository.findById(id);
-        if(car.isPresent()) return car.get();
-        throw new CarNotFoundException(id);
+    public ResponseEntity<Car> getCarById(@PathVariable Long id) throws CarNotFoundException {
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @DeleteMapping("car/{id}")
     public void deleteCar(@PathVariable Long id) throws CarNotFoundException {
-        Optional<Car> car = carRepository.findById(id);
-        if(car.isPresent()) carRepository.delete(car.get());
-        else throw new CarNotFoundException(id);
+        Car car = service.findById(id);
+        service.delete(car);;
     }
 
     @PutMapping("/car")
     public Car updateCarById(@RequestBody Car newCar) throws CarNotFoundException {
-        Optional<Car> oldCar = carRepository.findById(newCar.getId());
-        if(oldCar.isPresent()) return carRepository.save(newCar);
-        else throw new CarNotFoundException(newCar.getId());
+        Car car = service.findById(newCar.getId());
+        return service.save(newCar);
     }
 
 }
