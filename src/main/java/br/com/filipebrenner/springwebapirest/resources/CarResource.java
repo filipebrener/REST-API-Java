@@ -33,15 +33,16 @@ public class CarResource {
     }
 
     @DeleteMapping("car/{id}")
-    public void deleteCar(@PathVariable Long id) throws CarNotFoundException {
+    public ResponseEntity deleteCar(@PathVariable Long id) throws CarNotFoundException {
         Car car = service.findById(id);
-        service.delete(car);;
+        service.delete(car);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping("/car")
-    public Car updateCarById(@RequestBody Car newCar) throws CarNotFoundException {
+    public ResponseEntity<Car> updateCarById(@RequestBody Car newCar) throws CarNotFoundException {
         Car car = service.findById(newCar.getId());
-        return service.save(newCar);
+        return ResponseEntity.ok(service.save(newCar));
     }
 
 }
